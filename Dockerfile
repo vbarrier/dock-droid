@@ -52,11 +52,11 @@ RUN pacman -Syu git zip vim nano alsa-utils openssh unzip usbutils --noconfirm \
     && chown arch:arch /home/arch
 
 # allow ssh to container
-RUN mkdir -m 700 /root/.ssh
+#RUN mkdir -m 700 /root/.ssh
 
-WORKDIR /root/.ssh
-RUN touch authorized_keys \
-    && chmod 644 authorized_keys
+#WORKDIR /root/.ssh
+#RUN touch authorized_keys \
+#    && chmod 644 authorized_keys
 
 WORKDIR /etc/ssh
 RUN tee -a sshd_config <<< 'AllowTcpForwarding yes' \
@@ -93,7 +93,7 @@ WORKDIR /home/arch
 
 # optional --build-arg to change branches for testing
 ARG BRANCH=master
-ARG REPO='https://github.com/sickcodes/dock-droid.git'
+ARG REPO='https://github.com/vbarrier/dock-droid.git'
 RUN git clone --recurse-submodules --depth 1 --branch "${BRANCH}" "${REPO}"
 
 WORKDIR /home/arch/dock-droid
@@ -134,9 +134,9 @@ RUN if [[ "${COMPLETE}" ]]; then \
         && wget ${WGET_OPTIONS} "${CDROM_IMAGE_URL}" || exit 1 \
     ; fi
 
-ARG QCOW_SIZE=50G
+#ARG QCOW_SIZE=20G
 
-RUN qemu-img create -f qcow2 /home/arch/dock-droid/android.qcow2 "${QCOW_SIZE}"
+#RUN qemu-img create -f qcow2 /home/arch/dock-droid/android.qcow2 "${QCOW_SIZE}"
 
 # RUN [[ -z "${VDI}" ]] && qemu-img convert -f vdi -O qcow2 "${VDI}" android.qcow2
 # RUN [[ -z "${ISO}" ]] && -cdrom \
@@ -232,7 +232,7 @@ RUN touch Launch.sh \
 VOLUME ["/tmp/.X11-unix"]
 
 CMD export CDROM="${CDROM:="$(basename "${CDROM_IMAGE_URL}")"}" \
-    && touch ./android.qcow2 "${CDROM}" \
+    && "${CDROM}" \
     && ./enable-ssh.sh \
     && /bin/bash -c ./Launch.sh
 
